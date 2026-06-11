@@ -102,5 +102,47 @@ def add(front_file: str, back_file: str, model: str, notetype: str = NOTETYPE, d
         col.close()
 
 
+def search(query: str, limit: int = 50):
+    """Search non-suspended cards in the Kn deck by keywords.
+
+    Args:
+        query: Keywords to search for. Pass plain words; the script enforces
+            the deck and suspension filters. Anki search operators in the
+            query string are passed through but should not be needed.
+        limit: Max number of cards to print.
+    """
+    _check_version()
+    _close_anki()
+
+    full_query = f'deck:{DECK} -is:suspended {query}'
+    col = Collection(COLLECTION_PATH)
+    try:
+        card_ids = col.find_cards(full_query)
+        total = len(card_ids)
+        print(f"# {total} match(es) for: {full_query}")
+        if total == 0:
+            return
+        seen_notes = set()
+        shown = 0
+        for cid in card_ids:
+            if shown >= limit:
+                print(f"# ... {total - shown} more (raise --limit to see all)")
+                break
+            card = col.get_card(cid)
+            note = card.note()
+            if note.id in seen_notes:
+                continue
+            seen_notes.add(note.id)
+            shown += 1
+            print(f"=== {shown} ===")
+            print("FRONT:")
+            print(note["Front"])
+            print("BACK:")
+            print(note["Back"])
+            print()
+    finally:
+        col.close()
+
+
 if __name__ == "__main__":
-    fire.Fire({"add": add})
+    fire.Fire({"add": add, "search": search})
