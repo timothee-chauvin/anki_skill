@@ -2,6 +2,7 @@
 """Add cards to Anki collection directly, closing Anki if running."""
 
 import datetime
+from importlib.metadata import version as pkg_version
 from pathlib import Path
 import subprocess
 import sys
@@ -11,7 +12,6 @@ import fire
 from anki.collection import Collection
 
 COLLECTION_PATH = "/home/u/.local/share/Anki2/User 1/collection.anki2"
-EXPECTED_ANKI_VERSION = "25.02"
 NOTETYPE = "b"
 DECK = "Kn"
 
@@ -29,17 +29,22 @@ def _get_installed_anki_version() -> str | None:
 
 
 def _check_version():
-    version = _get_installed_anki_version()
-    if version is None:
-        print("Warning: could not detect Anki version", file=sys.stderr)
+    """Guard against opening the collection with a pip ``anki`` whose schema
+    differs from the desktop app: a mismatched library silently migrates the
+    DB on open and can corrupt the collection for the desktop app."""
+    desktop = _get_installed_anki_version()
+    if desktop is None:
+        print("Warning: could not detect desktop Anki version", file=sys.stderr)
         return
-    if version != EXPECTED_ANKI_VERSION:
+    lib = pkg_version("anki")
+    desktop_parts = [int(x) for x in desktop.split(".")]
+    lib_parts = [int(x) for x in lib.split(".")]
+    if lib_parts[: len(desktop_parts)] != desktop_parts:
+        major_minor = ".".join(str(p) for p in desktop_parts[:2])
         print(
-            f"Version mismatch: installed Anki is {version}, "
-            f"but this script expects {EXPECTED_ANKI_VERSION}.\n"
-            f"Update the anki pip dependency:\n"
-            f"  cd ~/prog/AI/anki && uv add 'anki>={version.replace('.0', '.')},<next'\n"
-            f"Then update EXPECTED_ANKI_VERSION in this script.",
+            f"Version mismatch: pip anki is {lib}, desktop Anki is {desktop}.\n"
+            f"Match the pip dependency to the desktop app:\n"
+            f"  cd ~/prog/AI/anki && uv add 'anki~={major_minor}.0'",
             file=sys.stderr,
         )
         sys.exit(1)
