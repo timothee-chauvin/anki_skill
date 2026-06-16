@@ -9,6 +9,7 @@ import sys
 import time
 
 import fire
+import orjson
 from anki.collection import Collection
 
 COLLECTION_PATH = "/home/u/.local/share/Anki2/User 1/collection.anki2"
@@ -65,10 +66,11 @@ def _close_anki():
 
 def _make_metadata(model: str, source: str = "/anki skill") -> str:
     today = datetime.date.today().isoformat()
+    payload = orjson.dumps({"from": source, "model": model, "added": today}).decode()
     return (
         f'<div><br></div>'
         f'<div style="font-size: 0.7em; color: gray;">'
-        f'{{"from":"{source}","model":"{model}","added":"{today}"}}'
+        f'{payload}'
         f'</div>'
     )
 
