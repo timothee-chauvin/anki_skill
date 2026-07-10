@@ -135,6 +135,11 @@ def _sync_media(col: Collection, auth: SyncAuth):
 
 def _open_snapshot(tmpdir: str) -> Collection:
     """Query a copy of the collection so the desktop app can stay open."""
+    if not COLLECTION_PATH.exists():
+        sys.exit(
+            f"No collection at {COLLECTION_PATH}. On a headless machine, run "
+            f"`anki_add.py login` then `anki_add.py full_download` first."
+        )
     snap = Path(tmpdir) / "collection.anki2"
     src = sqlite3.connect(f"file:{COLLECTION_PATH}?mode=ro", uri=True)
     try:
