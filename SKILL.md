@@ -6,9 +6,9 @@ description: Create Anki flashcards from a conversation. Use when the user asks 
 # Anki Card Creation
 ## Workflow
 
-1. **Search existing cards**: Before proposing, run `cd ~/prog/AI/anki && uv run python anki_add.py search "<keywords>"` to look up the topic *and* related concepts and likely paraphrases. Run several searches with different keyword combinations to catch existing cards that use different wording. Pass plain keywords only — no Anki search operators (`tag:`, `deck:`, `is:`). Topic markers like `(AI)` in fronts are not real Anki tags, just text. The script enforces `deck:Kn -is:suspended`.
+1. **Search existing cards**: Before proposing, run `cd ~/prog/AI/anki && uv run python anki_add.py search "<query 1>" "<query 2>" ...` to look up the topic *and* related concepts and likely paraphrases. The command accepts many queries at once — pass ALL your keyword combinations in a single invocation (one invocation is fast; several waste startup time). Use different keyword combinations to catch existing cards that use different wording. Pass plain keywords only — no Anki search operators (`tag:`, `deck:`, `is:`). Topic markers like `(AI)` in fronts are not real Anki tags, just text. The script enforces `deck:Kn -is:suspended`.
    - Multi-word queries are **AND** (every word must appear somewhere on the card). So `sandbox evasion` requires *both* words and will miss a card that only uses one. Always also search each meaningful word separately.
-   - If a narrow search returns no close matches, broaden to progressively larger categories until you get some content — e.g. `JumpReLU` → 0 hits → try `ReLU` → try `activation function` → try `neural network`. The goal is to land in *some* part of the collection so you can see how the user has covered the surrounding area, even when the specific concept is new.
+   - If a narrow search returns no close matches, broaden to progressively larger categories until you get some content — e.g. `JumpReLU` → 0 hits → try `ReLU` → try `activation function` → try `neural network`. The goal is to land in *some* part of the collection so you can see how the user has covered the surrounding area, even when the specific concept is new. When you anticipate needing broader fallbacks, include them in the same invocation (`search "JumpReLU" "ReLU" "activation function"`); a follow-up invocation is only needed if the results demand new queries.
 
    Use the results to:
    - skip duplicates
@@ -21,9 +21,9 @@ description: Create Anki flashcards from a conversation. Use when the user asks 
 
 4. **Add cards**: When the user confirms (e.g. "add them", "looks good", "go ahead"):
    - Create a temp dir: `TMPDIR=$(mktemp -d)`
-   - For each card, write the front and back as HTML files in the temp dir (e.g. `$TMPDIR/1_front.html`, `$TMPDIR/1_back.html`), then run:
+   - For each card N, write the front and back as HTML files in the temp dir (`$TMPDIR/1_front.html`, `$TMPDIR/1_back.html`, `$TMPDIR/2_front.html`, ...), then add ALL cards with a single invocation:
      ```
-     cd ~/prog/AI/anki && uv run python anki_add.py add --front_file '$TMPDIR/1_front.html' --back_file '$TMPDIR/1_back.html' --model 'YOUR_MODEL_ID'
+     cd ~/prog/AI/anki && uv run python anki_add.py add --cards_dir $TMPDIR --model 'YOUR_MODEL_ID'
      ```
    - Always pass your model ID (e.g. `claude-opus-4-6`). The script appends metadata (source, model, date) to the back automatically.
    - Pass `--deck` or `--notetype` if the user specified them (defaults: deck=Kn, notetype=b).
@@ -216,13 +216,13 @@ The following 15 cards span the patterns covered above (atomic def, X vs Y, algo
 
 ### Images
 - Use images when they save the back from transcribing something visual: formulas (when LaTeX would be unwieldy), before/after diagrams (e.g. an algorithm transformation), schematics, plots embedded in articles. Don't add an image just for decoration.
-- Anki media lives in `~/.local/share/Anki2/User 1/collection.media/`. Each card references a media file by filename only: `<img src="filename.png">`. The collection database doesn't store paths.
+- Anki media lives in `"$HOME/.local/share/Anki2/User 1/collection.media/"`. Each card references a media file by filename only: `<img src="filename.png">`. The collection database doesn't store paths.
 - Workflow during review:
   1. Source the image (provided by user, downloaded from a paper/article via WebFetch, or generated locally e.g. matplotlib/mermaid/graphviz).
   2. Save it to a temp location, e.g. `/tmp/anki_review/<n>.png`.
   3. Show the user with `eog /tmp/anki_review/<n>.png &` (opens a separate window — Claude Code does not currently render inline images, see anthropics/claude-code#29254). Mention the path in chat so the user can re-open it if needed.
 - Workflow on approval:
-  1. Pick a descriptive filename for the media dir. Verify it's not already taken: `ls "/home/u/.local/share/Anki2/User 1/collection.media/<name>.png"` should return "no such file" — if it does exist, pick another name.
-  2. `cp /tmp/anki_review/<n>.png "/home/u/.local/share/Anki2/User 1/collection.media/<name>.png"`
+  1. Pick a descriptive filename for the media dir. Verify it's not already taken: `ls "$HOME/.local/share/Anki2/User 1/collection.media/<name>.png"` should return "no such file" — if it does exist, pick another name.
+  2. `cp /tmp/anki_review/<n>.png "$HOME/.local/share/Anki2/User 1/collection.media/<name>.png"`
   3. Reference `<img src="<name>.png">` in the card's HTML.
 - Copyright is not a concern: this is a personal Anki collection, not redistribution.
