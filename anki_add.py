@@ -115,6 +115,7 @@ def _sync_collection(col: Collection, auth: SyncAuth):
         print(out.server_message, file=sys.stderr)
     if out.new_endpoint:
         _save_auth(auth.hkey, out.new_endpoint)
+        auth.endpoint = out.new_endpoint
     if out.required != SyncOutput.NO_CHANGES:
         state = SyncOutput.ChangesRequired.Name(out.required)
         sys.exit(
@@ -182,6 +183,10 @@ def full_download():
     col = _open_collection()
     try:
         out = col.sync_collection(auth, sync_media=False)
+        # AnkiWeb assigns a shard endpoint here; the full download 400s without it
+        if out.new_endpoint:
+            _save_auth(auth.hkey, out.new_endpoint)
+            auth.endpoint = out.new_endpoint
         if out.required == SyncOutput.NO_CHANGES:
             print("Collection already in sync.")
         else:
