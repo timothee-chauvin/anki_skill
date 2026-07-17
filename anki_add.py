@@ -151,13 +151,18 @@ def _open_snapshot(tmpdir: str) -> Collection:
     return Collection(str(snap))
 
 
+def _open_collection() -> Collection:
+    COLLECTION_PATH.parent.mkdir(parents=True, exist_ok=True)
+    return Collection(str(COLLECTION_PATH))
+
+
 def login():
     """One-time AnkiWeb login: exchanges credentials for an auth key (the
     password is not stored). Meant for headless machines; where the desktop
     app is installed, it owns syncing and this should not be used."""
     username = input("AnkiWeb email: ")
     password = getpass.getpass("AnkiWeb password: ")
-    col = Collection(str(COLLECTION_PATH))
+    col = _open_collection()
     try:
         auth = col.sync_login(username=username, password=password, endpoint=None)
     finally:
@@ -174,7 +179,7 @@ def full_download():
     if input("This OVERWRITES the local collection with AnkiWeb's copy. Type 'yes': ") != "yes":
         sys.exit("Aborted.")
     _close_anki()
-    col = Collection(str(COLLECTION_PATH))
+    col = _open_collection()
     try:
         out = col.sync_collection(auth, sync_media=False)
         if out.required == SyncOutput.NO_CHANGES:
@@ -227,7 +232,7 @@ def add(cards_dir: str, model: str, notetype: str = NOTETYPE, deck: str = DECK):
     _check_version()
     _close_anki()
     auth = _load_auth()
-    col = Collection(str(COLLECTION_PATH))
+    col = _open_collection()
     try:
         if auth is not None:
             _sync_collection(col, auth)
@@ -267,7 +272,7 @@ def search(*queries: str, limit: int = 50):
         col = _open_snapshot(tmpdir)
     else:
         _close_anki()
-        col = Collection(str(COLLECTION_PATH))
+        col = _open_collection()
         _sync_collection(col, auth)
     try:
         seen_notes = set()
