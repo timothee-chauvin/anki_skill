@@ -20,6 +20,9 @@ from pathlib import Path
 import fire
 import orjson
 from anki.collection import Collection
+from anki.consts import MODEL_CLOZE
+from anki.latex import ExtractedLatexOutput, _save_latex_image
+from anki.models import NotetypeDict
 from anki.sync import SyncAuth, SyncOutput
 
 COLLECTION_PATH = Path.home() / ".local/share/Anki2/User 1/collection.anki2"
@@ -201,6 +204,34 @@ def full_download():
         col.close()
 
 
+def _generate_latex_media(col: Collection, nt: NotetypeDict, *fields: str):
+    """Compile [latex] blocks into media files.
+
+    Anki only generates these while rendering a card, which never happens on a
+    headless machine, so cards would otherwise sync out referencing images that
+    exist nowhere. Rendering here also means the collection preference can stay
+    off: `render_latex` skips images already present in media, so downloaded
+    decks still get no way to run LaTeX.
+
+    `openin_any=p` denies TeX \\input/\\openin outside its working directory,
+    since LaTeX is a programming language that can otherwise read any file we
+    can and typeset it into an image that then syncs to AnkiWeb.
+    """
+    os.environ["openin_any"] = "p"
+    svg = nt.get("latexsvg", False)
+    for field in fields:
+        proto = col._backend.extract_latex(
+            text=field, svg=svg, expand_clozes=nt["type"] == MODEL_CLOZE
+        )
+        for latex in ExtractedLatexOutput.from_proto(proto).latex:
+            if col.media.have(latex.filename):
+                continue
+            err = _save_latex_image(col, latex, nt["latexPre"], nt["latexPost"], svg)
+            if err is not None:
+                sys.exit(f"LaTeX generation failed for {latex.filename}:\n{err}")
+            print(f"Generated {latex.filename}", file=sys.stderr)
+
+
 def _make_metadata(model: str, source: str = "/anki skill") -> str:
     today = datetime.date.today().isoformat()
     payload = orjson.dumps({"from": source, "model": model, "added": today}).decode()
@@ -250,6 +281,7 @@ def add(cards_dir: str, model: str, notetype: str = NOTETYPE, deck: str = DECK):
             note = col.new_note(nt)
             note["Front"] = front
             note["Back"] = back + metadata
+            _generate_latex_media(col, nt, note["Front"], note["Back"])
             col.add_note(note, deck_id)
             print(f"Added card to {deck} (id={note.id})")
         if auth is not None:
