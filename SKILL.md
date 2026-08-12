@@ -41,6 +41,7 @@ Do NOT add the cards without user confirmation, even if you're running in auto m
 - Concise backs: get to the point. No "The answer is..." preamble. Sometimes just one word.
 - Parenthetical asides for nuance, caveats, mnemonics.
 - HTML for formatting in the actual card content: `<div>`, `<br>`, `<a href>`, bold/italic sparingly. Other inline tags (`<em>`, `<ul>`/`<li>`, `<img>` placed mid-paragraph) are fine when they aid reading. No markdown in card content.
+- Math goes in `[latex]...[/latex]` blocks (see example 11), not MathJax `\(...\)`. Images are compiled when the card is added, so a formula that doesn't build fails the whole add — stick to macros from the packages the notetype's `latexPre` already loads.
 - Links to sources at the bottom of the back when the card comes from a specific article/paper. Use `<a href="URL">URL</a>` format.
 - When proposing cards to the user in chat:
   - Use actual line breaks between paragraphs, not HTML tags.
