@@ -4,6 +4,6 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
-    "anki>=25.2,<25.3",
+    "anki~=26.9.0",
     "fire>=0.7.1",
 ]

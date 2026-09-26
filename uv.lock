@@ -3,30 +3,29 @@ revision = 3
 requires-python = ">=3.11"
 
 [options]
-exclude-newer = "2026-04-29T16:18:45.561616381Z"
+exclude-newer = "2026-09-19T13:32:50.03981459Z"
 exclude-newer-span = "P7D"
 
 [[package]]
 name = "anki"
-version = "25.2.7"
+version = "26.9.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "beautifulsoup4" },
     { name = "decorator" },
     { name = "distro", marker = "sys_platform != 'darwin' and sys_platform != 'win32'" },
     { name = "markdown" },
     { name = "orjson" },
     { name = "protobuf" },
-    { name = "psutil", marker = "sys_platform == 'win32'" },
     { name = "requests", extra = ["socks"] },
     { name = "typing-extensions" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c1/9d/fab8ab4a48b32e842f83e2d4962512558610f6939f58289b9f3a437388c7/anki-25.02.7-cp39-abi3-macosx_12_0_arm64.whl", hash = "sha256:aca0ce84c73998abd4920434a7e53c037b5b3fcec9727af2ceb01687cac7a87f", size = 9032257, upload-time = "2025-06-06T06:59:44.228Z" },
-    { url = "https://files.pythonhosted.org/packages/89/85/e54b97cfb587df07f6705726d819e074a44c7d2ac792438d819b321330d1/anki-25.02.7-cp39-abi3-macosx_12_0_x86_64.whl", hash = "sha256:8410257b7e81d452436049753dbea2f5f4cf07ab134e14c89a91e6a9658bf075", size = 9499648, upload-time = "2025-06-06T06:59:47.697Z" },
-    { url = "https://files.pythonhosted.org/packages/71/40/19545c12e7d14cf00a5d669317bc39e8b0e14b538da9a1bf753a0b59269f/anki-25.02.7-cp39-abi3-manylinux_2_35_aarch64.whl", hash = "sha256:8cd97678bfe46509629e23d9906211c4a605f1d5ab30a3b08aa28bacb8fc09e3", size = 10280458, upload-time = "2025-06-06T06:59:50.092Z" },
-    { url = "https://files.pythonhosted.org/packages/f4/be/4b66f654302eb99e02f691ba1fdd1a5cd1f439d439b3b16f58aa4786836f/anki-25.02.7-cp39-abi3-manylinux_2_35_x86_64.whl", hash = "sha256:ae979f157527d2a2a9c77ffa38fd015e43f067c04e43e111c99fa2cf35612e5d", size = 10655455, upload-time = "2025-06-06T06:59:53.193Z" },
-    { url = "https://files.pythonhosted.org/packages/35/61/ec83880eddad014bd8dc2c16975e4c2662abfed8830fd1612a7ff2d396d0/anki-25.02.7-cp39-abi3-win_amd64.whl", hash = "sha256:ba257206176829a0b889473e68dec72835c023964cc11c4cea162ecf2ae7e6fd", size = 9293239, upload-time = "2025-06-06T06:59:55.634Z" },
+    { url = "https://files.pythonhosted.org/packages/61/68/f19a0d856ce98709b7069d1816fb6c2dc6748a03d54d023f91eac2276606/anki-26.9.2-cp310-abi3-macosx_12_0_arm64.whl", hash = "sha256:a29f9df136dadf047e8fbceb0e2b5d38f203c21b1916f492d0701c8a503f597f", size = 9202360, upload-time = "2026-09-15T21:21:30.706Z" },
+    { url = "https://files.pythonhosted.org/packages/f7/b5/e0069533f1a3f779519bb905546e0706f5ae4a912a114c520e8ea5d98e3f/anki-26.9.2-cp310-abi3-macosx_12_0_x86_64.whl", hash = "sha256:18e686a143e60a28e9a7b200d06c673b4ae838caf83a8e6f6983dd007b7741fc", size = 9621201, upload-time = "2026-09-15T21:21:32.991Z" },
+    { url = "https://files.pythonhosted.org/packages/0d/1a/24a691862dac680a2e787a281127f9d1589138049cf463625ca53848efb3/anki-26.9.2-cp310-abi3-manylinux_2_35_aarch64.whl", hash = "sha256:b1ab9a093412593ef10be36ce6bf2309f65ad14c83256fd6e6a68217f932a840", size = 10499248, upload-time = "2026-09-15T21:21:35.437Z" },
+    { url = "https://files.pythonhosted.org/packages/99/a1/b351db3b5f94764f29cc9813a26dab1e729a5ec0e7bf8bce065bdea79ec4/anki-26.9.2-cp310-abi3-manylinux_2_35_x86_64.whl", hash = "sha256:63f792964e1a7bd6a9a4f4a0603469587ef1a61c3d2d49ff3eb7812e5b8c1a08", size = 10795499, upload-time = "2026-09-15T21:21:37.56Z" },
+    { url = "https://files.pythonhosted.org/packages/32/9f/11926de8f7e063fd2c04f23e92684bac7c161f82c6b24e9fc78e5618c709/anki-26.9.2-cp310-abi3-win_amd64.whl", hash = "sha256:644d37401af95b47c20139486b35da0b773c6ea2674c35099eb6334041c09b66", size = 9500095, upload-time = "2026-09-15T21:21:39.713Z" },
+    { url = "https://files.pythonhosted.org/packages/87/6c/716c5e4cf48e6f161bd640df6b3cfebc4457bf21c31a13ea554809b1f753/anki-26.9.2-cp310-abi3-win_arm64.whl", hash = "sha256:671a892639db1927e3fdd4bfbee5861605c054c83c2301fa70f15a0b86447f02", size = 8973714, upload-time = "2026-09-15T21:21:41.944Z" },
 ]
 
 [[package]]
@@ -40,21 +39,8 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anki", specifier = ">=25.2,<25.3" },
+    { name = "anki", specifier = "~=26.9.0" },
     { name = "fire", specifier = ">=0.7.1" },
-]
-
-[[package]]
-name = "beautifulsoup4"
-version = "4.14.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "soupsieve" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/c3/b0/1c6a16426d389813b48d95e26898aff79abbde42ad353958ad95cc8c9b21/beautifulsoup4-4.14.3.tar.gz", hash = "sha256:6292b1c5186d356bba669ef9f7f051757099565ad9ada5dd630bd9de5fa7fb86", size = 627737, upload-time = "2025-11-30T15:08:26.084Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1a/39/47f9197bdd44df24d67ac8893641e16f386c984a0619ef2ee4c51fbbc019/beautifulsoup4-4.14.3-py3-none-any.whl", hash = "sha256:0918bfe44902e6ad8d57732ba310582e98da931428d231a5ecb9e7c703a735bb", size = 107721, upload-time = "2025-11-30T15:08:24.087Z" },
 ]
 
 [[package]]
@@ -287,20 +273,6 @@ wheels = [
 ]
 
 [[package]]
-name = "psutil"
-version = "7.2.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/aa/c6/d1ddf4abb55e93cebc4f2ed8b5d6dbad109ecb8d63748dd2b20ab5e57ebe/psutil-7.2.2.tar.gz", hash = "sha256:0746f5f8d406af344fd547f1c8daa5f5c33dbc293bb8d6a16d80b4bb88f59372", size = 493740, upload-time = "2026-01-28T18:14:54.428Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/16/ba/0756dca669f5a9300d0cbcbfae9a4c30e446dfc7440ffe43ded5724bfd93/psutil-7.2.2-cp313-cp313t-win_amd64.whl", hash = "sha256:ab486563df44c17f5173621c7b198955bd6b613fb87c71c161f827d3fb149a9b", size = 139893, upload-time = "2026-01-28T18:15:06.378Z" },
-    { url = "https://files.pythonhosted.org/packages/1c/61/8fa0e26f33623b49949346de05ec1ddaad02ed8ba64af45f40a147dbfa97/psutil-7.2.2-cp313-cp313t-win_arm64.whl", hash = "sha256:ae0aefdd8796a7737eccea863f80f81e468a1e4cf14d926bd9b6f5f2d5f90ca9", size = 135589, upload-time = "2026-01-28T18:15:08.03Z" },
-    { url = "https://files.pythonhosted.org/packages/dd/2c/ff9bfb544f283ba5f83ba725a3c5fec6d6b10b8f27ac1dc641c473dc390d/psutil-7.2.2-cp314-cp314t-win_amd64.whl", hash = "sha256:c7663d4e37f13e884d13994247449e9f8f574bc4655d509c3b95e9ec9e2b9dc1", size = 141228, upload-time = "2026-01-28T18:15:18.385Z" },
-    { url = "https://files.pythonhosted.org/packages/f2/fc/f8d9c31db14fcec13748d373e668bc3bed94d9077dbc17fb0eebc073233c/psutil-7.2.2-cp314-cp314t-win_arm64.whl", hash = "sha256:11fe5a4f613759764e79c65cf11ebdf26e33d6dd34336f8a337aa2996d71c841", size = 136284, upload-time = "2026-01-28T18:15:19.912Z" },
-    { url = "https://files.pythonhosted.org/packages/b4/90/e2159492b5426be0c1fef7acba807a03511f97c5f86b3caeda6ad92351a7/psutil-7.2.2-cp37-abi3-win_amd64.whl", hash = "sha256:eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988", size = 137737, upload-time = "2026-01-28T18:15:33.849Z" },
-    { url = "https://files.pythonhosted.org/packages/8c/c7/7bb2e321574b10df20cbde462a94e2b71d05f9bbda251ef27d104668306a/psutil-7.2.2-cp37-abi3-win_arm64.whl", hash = "sha256:8c233660f575a5a89e6d4cb65d9f938126312bca76d8fe087b947b3a1aaac9ee", size = 134617, upload-time = "2026-01-28T18:15:36.514Z" },
-]
-
-[[package]]
 name = "pysocks"
 version = "1.7.1"
 source = { registry = "https://pypi.org/simple" }
@@ -327,15 +299,6 @@ wheels = [
 [package.optional-dependencies]
 socks = [
     { name = "pysocks" },
-]
-
-[[package]]
-name = "soupsieve"
-version = "2.8.3"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7b/ae/2d9c981590ed9999a0d91755b47fc74f74de286b0f5cee14c9269041e6c4/soupsieve-2.8.3.tar.gz", hash = "sha256:3267f1eeea4251fb42728b6dfb746edc9acaffc4a45b27e19450b676586e8349", size = 118627, upload-time = "2026-01-20T04:27:02.457Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/46/2c/1462b1d0a634697ae9e55b3cecdcb64788e8b7d63f54d923fcd0bb140aed/soupsieve-2.8.3-py3-none-any.whl", hash = "sha256:ed64f2ba4eebeab06cc4962affce381647455978ffc1e36bb79a545b91f45a95", size = 37016, upload-time = "2026-01-20T04:27:01.012Z" },
 ]
 
 [[package]]
