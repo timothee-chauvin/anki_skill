@@ -31,6 +31,13 @@ description: Create Anki flashcards from a conversation. Use when the user asks 
 
 5. **Confirm**: Report how many cards were added.
 
+### Updating existing cards
+
+When a new card reveals that an existing one is outdated, ambiguous, or clashes with it, propose an edit to the existing card (showing current and proposed versions) alongside the new cards. On confirmation, update it in place so its review history is kept:
+- `search` prints each note's id (`=== N (note id=...) ===`).
+- Write `<note_id>_front.html` and/or `<note_id>_back.html` to a temp dir (a missing file leaves that field unchanged), then run `cd ~/prog/AI/anki && uv run python anki_add.py update --cards_dir $TMPDIR`.
+- Each file replaces the field **verbatim**: start from the exact current HTML printed by `search` (including any metadata div) and edit it, never retype it. Never drop the user's existing content unless they asked.
+
 Do NOT add the cards without user confirmation, even if you're running in auto mode or dangerously-skip-permissions mode. Nothing goes in the user's Anki collection without review.
 
 ## Card style guide

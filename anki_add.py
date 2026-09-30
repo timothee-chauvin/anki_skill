@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from contextlib import contextmanager
 from importlib.metadata import version as pkg_version
 from pathlib import Path
 
@@ -243,6 +244,35 @@ def _make_metadata(model: str, source: str = "/anki skill") -> str:
     )
 
 
+def _read_card_files(cards_dir: str) -> dict[int, dict[str, str]]:
+    """Map each N in N_front.html / N_back.html to the fields present for it."""
+    cards: dict[int, dict[str, str]] = {}
+    for path in Path(cards_dir).glob("*_*.html"):
+        key, side = path.stem.split("_")
+        field = {"front": "Front", "back": "Back"}[side]
+        cards.setdefault(int(key), {})[field] = path.read_text()
+    if not cards:
+        sys.exit(f"No *_front.html / *_back.html files in {cards_dir}")
+    return dict(sorted(cards.items()))
+
+
+@contextmanager
+def _writable_collection():
+    _check_version()
+    _close_anki()
+    auth = _load_auth()
+    col = _open_collection()
+    try:
+        if auth is not None:
+            _sync_collection(col, auth)
+        yield col
+        if auth is not None:
+            _sync_collection(col, auth)
+            _sync_media(col, auth)
+    finally:
+        col.close()
+
+
 def add(cards_dir: str, model: str, notetype: str = NOTETYPE, deck: str = DECK):
     """Add cards to Anki. Reads N_front.html / N_back.html pairs from a directory.
 
@@ -253,42 +283,44 @@ def add(cards_dir: str, model: str, notetype: str = NOTETYPE, deck: str = DECK):
         notetype: Anki notetype name.
         deck: Anki deck name.
     """
-    fronts = sorted(
-        Path(cards_dir).glob("*_front.html"), key=lambda p: int(p.name.split("_")[0])
-    )
-    if not fronts:
-        sys.exit(f"No *_front.html files in {cards_dir}")
-    cards = []
-    for front_path in fronts:
-        back_path = front_path.with_name(front_path.name.replace("_front", "_back"))
-        if not back_path.exists():
-            sys.exit(f"Missing {back_path}")
-        cards.append((front_path.read_text(), back_path.read_text()))
+    cards = _read_card_files(cards_dir)
+    for n, fields in cards.items():
+        if fields.keys() != {"Front", "Back"}:
+            sys.exit(f"Card {n} needs both {n}_front.html and {n}_back.html")
 
-    _check_version()
-    _close_anki()
-    auth = _load_auth()
-    col = _open_collection()
-    try:
-        if auth is not None:
-            _sync_collection(col, auth)
+    with _writable_collection() as col:
         nt = col.models.by_name(notetype)
         if nt is None:
             sys.exit(f"Notetype '{notetype}' not found")
         deck_id = col.decks.id_for_name(deck)
         metadata = _make_metadata(model)
-        for front, back in cards:
+        for fields in cards.values():
             note = col.new_note(nt)
-            note["Front"] = front
-            note["Back"] = back + metadata
+            note["Front"] = fields["Front"]
+            note["Back"] = fields["Back"] + metadata
             _generate_latex_media(col, nt, note["Front"], note["Back"])
             col.add_note(note, deck_id)
             print(f"Added card to {deck} (id={note.id})")
-        if auth is not None:
-            _sync_collection(col, auth)
-            _sync_media(col, auth)
-    finally:
-        col.close()
+
+
+def update(cards_dir: str):
+    """Overwrite fields of existing notes (review history is kept).
+
+    Args:
+        cards_dir: Directory containing <note_id>_front.html and/or
+            <note_id>_back.html (note ids as printed by `search`). Each file
+            replaces that field verbatim; a missing file leaves the field as is.
+    """
+    cards = _read_card_files(cards_dir)
+    with _writable_collection() as col:
+        notes = {note_id: col.get_note(note_id) for note_id in cards}  # raises on unknown id
+        for note_id, fields in cards.items():
+            note = notes[note_id]
+            for field, value in fields.items():
+                note[field] = value
+            _generate_latex_media(col, note.note_type(), note["Front"], note["Back"])
+            col.update_note(note)
+            print(f"Updated note {note_id} ({', '.join(fields)})")
 
 
 def search(*queries: str, limit: int = 50):
@@ -329,7 +361,7 @@ def search(*queries: str, limit: int = 50):
                     continue
                 seen_notes.add(note.id)
                 shown += 1
-                print(f"=== {shown} ===")
+                print(f"=== {shown} (note id={note.id}) ===")
                 print("FRONT:")
                 print(note["Front"])
                 print("BACK:")
@@ -346,5 +378,5 @@ def search(*queries: str, limit: int = 50):
 
 if __name__ == "__main__":
     fire.Fire(
-        {"add": add, "search": search, "login": login, "full_download": full_download}
+        {"add": add, "update": update, "search": search, "login": login, "full_download": full_download}
     )
